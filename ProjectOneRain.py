@@ -88,10 +88,7 @@ def stacked_rain_chart_count(df):
 	return plt.show()
 
 #Count # of rain	
-#count the number of rows that has the same (weekday,rain) values
-# Created new row['count'] to record the counted number.
-# In fact this step is redundant, because you will find that
-# every column has the same values after you perform groupby() followed by count()
+#Count the number of rows that has the same (weekday,rain) values
 def stacked_rain_chart_sum(df):
 	w1=df.groupby(['weekday','rain'],as_index=False)
 	w=w1.sum().loc[:,['weekday','rain','ENTRIESn_hourly']]

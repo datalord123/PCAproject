@@ -6,7 +6,7 @@ import scipy.stats
 import matplotlib.pyplot as plt
 
 
-#df = pd.read_csv('turnstile_weather_v2.csv')
+df = pd.read_csv('turnstile_weather_v2.csv')
 #I used the improved dataset for this project
 
 def normalise(data):
@@ -14,7 +14,8 @@ def normalise(data):
     stdev = data.std()
     return (data - mean)/stdev
 
-def linear_regression(features, values):    
+def linear_regression(features, values): 
+    #features = sm.add_constant(features) Code needs to be tweaked to add constant
     results = sm.OLS(values, features).fit()
     params = results.params
     print results.summary()
@@ -65,8 +66,9 @@ def rain_entries_histogram(df):
 	plt.xlabel("ENTRIESn_Hourly")
 	plt.legend()
 	return plt.show()
-	
-def stacked_rain_chart(df):
+
+#Count # of rain	
+def stacked_rain_chart_count(df):
 	df['count']=0
 	w=df.groupby(['weekday','rain'],as_index=False)
 	w=w.count().loc[:,['weekday','rain','count']]
@@ -78,12 +80,48 @@ def stacked_rain_chart(df):
 	width = .35
 	p1=plt.bar(ind,NoRain,width,color='g',align='center')
 	p2=plt.bar(ind,Rain,width,color='b', align='center', bottom = NoRain)
-	plt.ylabel('ENTRIESn')
-	plt.title('Ridership by DayType and Weather')
+	plt.ylabel('Occurences')
+	plt.title('Weather by DayType')
 	plt.legend( (p1[0], p2[0]), ('NoRain', 'Rain'))
 	plt.xticks(ind, group_labels)
 	plt.xlim([min(ind) - 1,max(ind)+1 ])
 	return plt.show()
+
+#Count # of rain	
+#count the number of rows that has the same (weekday,rain) values
+# Created new row['count'] to record the counted number.
+# In fact this step is redundant, because you will find that
+# every column has the same values after you perform groupby() followed by count()
+def stacked_rain_chart_sum(df):
+	w1=df.groupby(['weekday','rain'],as_index=False)
+	w=w1.sum().loc[:,['weekday','rain','ENTRIESn_hourly']]
+	Rain=w['ENTRIESn_hourly'][w.rain==1]
+	NoRain=w['ENTRIESn_hourly'][w.rain==0]
+	group_labels = ['Weekend','Weekday']
+	num_items = len(group_labels)
+	ind = np.arange(num_items)
+	width = .35
+	p1=plt.bar(ind,NoRain,width,color='g',align='center')
+	p2=plt.bar(ind,Rain,width,color='b', align='center', bottom = NoRain)
+	plt.ylabel('ENTRIESn_hourly')
+	plt.title('Ridership by DayType and Weather')
+	plt.legend( (p1[0], p2[0]), ('NoRain', 'Rain'))
+	plt.xticks(ind, group_labels)
+	plt.xlim([min(ind) - 1,max(ind)+1 ])
+	return plt.show()	
+
+
+"""
+I use groupby() to create a DataFrameGroupBy object. This object is similar to a python dict that maintains key-value pairs. Keys are the (weekday,rain) and the values are the row indexes of the original data frame that matches the key values.
+Then I use count() to convert the DataFrameGroupBy object back to a DataFrame frame again. 
+count() makes the values of each column becomes the number of entries that has 
+the same (weekday,rain) value. If you want to sum up the values of each column 
+that has the same (weekday,rain) values, you can use sum() to convert the 
+DataFrameGroupBy object back to a DataFrame.
+
+http://nbviewer.ipython.org/gist/kanhua/fe694f5d6391465af789
+
+"""	
  
 #Histogram and Stacked Bar as Subplots              
 def turnsitle_visualizations(df):
@@ -97,8 +135,8 @@ def turnsitle_visualizations(df):
 	plt.legend()
 	plt.subplot(212)
 	df['count']=0
-	w=df.groupby(['weekday','rain'],as_index=False)
-	w=w.count().loc[:,['weekday','rain','count']]
+	w=df.groupby(['weekday','rain'],as_index=False) 
+	w=w.count().loc[:,['weekday','rain','count']] #Counts occurences
 	Rain=w['count'][w.rain==1]
 	NoRain=w['count'][w.rain==0]
 	group_labels = ['Weekend','Weekday']
@@ -107,8 +145,8 @@ def turnsitle_visualizations(df):
 	width = .35
 	p1=plt.bar(ind,NoRain,width,color='g',align='center')
 	p2=plt.bar(ind,Rain,width,color='b', align='center', bottom = NoRain)
-	plt.ylabel('ENTRIESn')
-	plt.title('Ridership by DayType and Weather')
+	plt.ylabel('Occurences')
+	plt.title('Weather by DayType')
 	plt.legend( (p1[0], p2[0]), ('NoRain', 'Rain'))
 	plt.xticks(ind, group_labels)
 	plt.xlim([min(ind) - 1,max(ind)+1 ])
@@ -116,9 +154,10 @@ def turnsitle_visualizations(df):
 	return plt.show()
 
                  
-get_predictions(df) 
-rain_mann_whitney_plus_means(df)
+#get_predictions(df) 
+#rain_mann_whitney_plus_means(df)
 #rain_entries_histogram(df)
-#stacked_rain_chart(df)
+stacked_rain_chart_count(df)
+stacked_rain_chart_sum(df)
 turnsitle_visualizations(df)	 
  

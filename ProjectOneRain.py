@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from ggplot import *
 import scipy.stats
 import matplotlib.pyplot as plt
 
@@ -151,10 +150,10 @@ def turnsitle_visualizations(df):
 	return plt.show()
 
                  
-#get_predictions(df) 
+get_predictions(df) 
 #rain_mann_whitney_plus_means(df)
 #rain_entries_histogram(df)
-stacked_rain_chart_count(df)
-stacked_rain_chart_sum(df)
-turnsitle_visualizations(df)	 
+#stacked_rain_chart_count(df)
+#stacked_rain_chart_sum(df)
+#turnsitle_visualizations(df)	 
  

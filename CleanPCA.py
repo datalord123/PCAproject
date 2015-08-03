@@ -37,4 +37,9 @@ def perform_PCA(df):
 df = prepare_data(filenames)
 perform_PCA(df)
 
-	
+#Factor Analysis
+def perform_FA(df):
+	data_normal = preprocessing.scale(data) #Normalization
+	fa = decomposition.FactorAnalysis(n_components=1)
+	fa.fit(data_normal)
+	print fa.components_ # Factor loadings

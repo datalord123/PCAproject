@@ -26,14 +26,19 @@ def prepare_data(filenames):
 	return df
 
 def perform_PCA(df):
+	threshold = 0.3
+	component = 1 #Second of two right now
 	pca = decomposition.PCA(n_components=2)
 	scaled_data = preprocessing.scale(df)
 	pca.fit(scaled_data)
 	transformed = pca.transform(scaled_data)
-	print pca.components_
-	print pca.explained_variance_ratio_
-
+	pca_components_df = pd.DataFrame(data = pca.components_,columns = df.columns.values)
 	
+	#print pca.components_
+	print pca_components_df
+	print pca_components_df[abs(pca_components_df) > threshold]
+	#print pca.explained_variance_ratio_
+	print (pca_components_df.columns[abs(pca_components_df.ix[component]) > threshold]).values	
 df = prepare_data(filenames)
 perform_PCA(df)
 

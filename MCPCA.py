@@ -11,25 +11,26 @@ filename = 'PCACG2.csv'
 def prepare_data(filename):
 	df=pd.read_csv(filename,index_col=0)
 	df = df.fillna('0')
+	#print df.head()
 	return df
 
 def perform_PCA(df):
 	threshold = 0.1
-	component = 1 #Second of two right now
-	pca = decomposition.PCA(n_components=5)
+	pca = decomposition.PCA(n_components=3)
 	numpyMatrix = df.as_matrix().astype(float)
 	scaled_data = preprocessing.scale(numpyMatrix)
 	pca.fit(scaled_data)	
-	pca.transform(scaled_data)
-	
+	transformed=pca.transform(scaled_data)
+	CompScores= pd.DataFrame(data=transformed,columns = ['PC1','PC2','PC3'],index=df.index)
+	#print CompScores
+	CompScores.to_csv('CompScores.csv')
 	pca_components_df = pd.DataFrame(data = pca.components_,columns = df.columns.values)
-	#print pca_components_df
+	#print pca_components_df.T
+	pca_components_df=pca_components_df.T
 	#pca_components_df.to_csv('pca_components_df.csv')
-
 	filtered = pca_components_df[abs(pca_components_df) > threshold]
-	trans_filtered= filtered.T
-	#print filtered.T #Tranformed Dataframe
-	trans_filtered.to_csv('trans_filtered.csv')
-	print pca.explained_variance_ratio_
+	#print filtered
+	#filtered.to_csv('filtered.csv')
+	#print pca.explained_variance_ratio_
 df = prepare_data(filename)
 perform_PCA(df)
